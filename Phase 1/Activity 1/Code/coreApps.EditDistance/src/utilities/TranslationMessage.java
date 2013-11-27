@@ -5,7 +5,7 @@ import java.util.UUID;
 public class TranslationMessage extends Message {
 
 	private static final long serialVersionUID = 1L;
-	private UUID rquestId = UUID.randomUUID();
+	private UUID requestId = UUID.randomUUID();
 	private UUID responseId;
 	private String data1 = "";
 	private String data2 = "";
@@ -14,7 +14,7 @@ public class TranslationMessage extends Message {
 	public TranslationMessage(String _response, TranslationMessage request) {
 		super();
 		this.response = _response;
-		this.responseId = request.rquestId;
+		this.responseId = request.getRequestId();
 	}
 
 	public TranslationMessage(String _response) {
@@ -57,12 +57,12 @@ public class TranslationMessage extends Message {
 		this.response = response;
 	}
 
-	public UUID getRquestId() {
-		return rquestId;
+	public UUID getRequestId() {
+		return requestId;
 	}
 
-	public void setRquestId(UUID rquestId) {
-		this.rquestId = rquestId;
+	public void setRquestId(UUID requestId) {
+		this.requestId = requestId;
 	}
 
 	public UUID getResponseId() {

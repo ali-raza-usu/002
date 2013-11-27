@@ -99,16 +99,16 @@ public class Server extends Thread {
 							msg = new TranslationMessage(
 									"Levenshtein Distance between string : "
 											+ msg.getData1() + " and string "
-											+ msg.getData2() + " is " + result);
+											+ msg.getData2() + " is " + result, msg);
 							buffer.clear();
 							buffer = ByteBuffer.wrap(Encoder.encode(msg));
 							client.write(buffer);
 							_logger.debug("Sending " + msg.getResponse());
-							if (msg.getData1().equals("quit")
-									|| msg.getData2().equals("quit")) {
-								client.close();
-								return;
-							}
+//							if (msg.getData1().equals("quit")
+//									|| msg.getData2().equals("quit")) {
+//								client.close();
+//								return;
+//							}
 						}
 					}
 				}
