@@ -11,6 +11,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.Iterator;
+import java.util.UUID;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -33,6 +34,7 @@ public class FTPServer extends Thread {
 	ByteBuffer buffer = ByteBuffer.allocateDirect(5024);
 	FileHandler _fileHandler = new FileHandler();
 	FileInputStream fis = null;
+	UUID conversationId = null;
 	int CHUNK_SIZE = 1000;
 	private byte[] rdBytes = null;
 	boolean transferComplete = false;
@@ -101,11 +103,13 @@ public class FTPServer extends Thread {
 									&& _data.getClass().equals(
 											FileTransferRequest.class)) {
 								FileTransferRequest _fileTransferRequest = (FileTransferRequest) _data;
+								conversationId = _fileTransferRequest.getMessageId();
 								if (_fileTransferRequest.getFileIndex() == null) {
 									String fileList = _fileHandler
 											.getFileInterfaceStr();
 									FileTransferRequest _request = new FileTransferRequest(
 											null, fileList);
+									_request.setMessageId(conversationId);
 									buffer = ByteBuffer.wrap(Encoder
 											.encode(_request));
 									client.write(buffer);
@@ -151,6 +155,7 @@ public class FTPServer extends Thread {
 												_resp = new FileTransferResponse(
 														selectedFile.getName(),
 														rdBytes, true);
+												_resp.setResponseId(conversationId);
 												isFinnished = true;// breaking
 																	// out of
 																	// inner
@@ -160,6 +165,7 @@ public class FTPServer extends Thread {
 												_resp = new FileTransferResponse(
 														selectedFile.getName(),
 														rdBytes, false);
+												_resp.setResponseId(conversationId);
 											}
 											// Introduce Random Delays
 											try {

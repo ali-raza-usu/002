@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.UUID;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -30,7 +31,7 @@ public class FTPClient extends Thread {
 	ByteBuffer readBuf = ByteBuffer.allocateDirect(5024);
 	FileOutputStream fos = null;
 	File rcvdFile = null;
-
+	UUID conversationId = null;
 	private boolean transferComplete = false;
 	BufferedReader inputBuf = null;
 
@@ -56,11 +57,13 @@ public class FTPClient extends Thread {
 						.println("Do you want to see list of files avaialble on the Server: (Y/N) ");
 				inputBuf = new BufferedReader(new InputStreamReader(System.in));
 				String s = inputBuf.readLine();
-				if (s.equals("Y"))
+				if (s.equals("Y")) {
+					conversationId = UUID.randomUUID();
 					doExit = true;
+				}
 			}
-
 			FileTransferRequest _request = new FileTransferRequest(null, null);
+			_request.setMessageId(conversationId);
 			buffer.clear();
 			buffer = ByteBuffer.wrap(Encoder.encode(_request));
 			sc.write(buffer);
@@ -82,6 +85,7 @@ public class FTPClient extends Thread {
 							&& _data.getClass().equals(
 									FileTransferRequest.class)) {
 						_request = (FileTransferRequest) _data;
+						conversationId = _request.getMessageId();
 						System.out.println("Received Files from Server: \n"+ _request.getFileNames());
 						System.out
 								.println("\nPlease enter the file index you want to download.");
@@ -89,6 +93,7 @@ public class FTPClient extends Thread {
 								System.in));
 						String fileIndex = inputBuf.readLine();
 						_request = new FileTransferRequest(fileIndex, null);
+						_request.setMessageId(conversationId);
 						buffer.clear();
 						buffer = ByteBuffer.wrap(Encoder.encode(_request));
 						sc.write(buffer);

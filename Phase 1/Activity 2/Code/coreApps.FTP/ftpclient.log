@@ -1,0 +1,4 @@
+06:18:32,190 DEBUG FTPClient.java: 108 - File created at /Users/kanghao/Documents/aspectjworkspace/coreApps.FTP/paper1.txt
+06:18:32,194 DEBUG FTPClient.java: 136 - Client is sending File Complete Transfer Ack
+06:18:32,197 DEBUG FTPClient.java: 140 - File Transfer is complete. Now the file is being opened
+06:18:32,412 DEBUG FTPClient.java: 154 - Client is closing all the connections 
