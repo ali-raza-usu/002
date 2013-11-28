@@ -1,0 +1,3 @@
+17:46:51,745 DEBUG Client.java: 40 - Channel connected!
+17:46:53,812 DEBUG Client.java: 61 - Sending strings 'SDAD' and 'ADAD'
+17:46:54,036 DEBUG Client.java: 74 - Received Levenshtein Distance between string : SDAD and string ADAD is 1
