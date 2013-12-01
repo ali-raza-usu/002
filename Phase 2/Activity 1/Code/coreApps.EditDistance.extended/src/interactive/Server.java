@@ -55,7 +55,7 @@ public class Server extends Thread{
                 dgc.register(sckt_manager,dgc.validOps());
                 _logger.debug("Channel Establishd");
                 
-                TranslationMessage msg = null;
+                TranslationRequestMessage msg = null;
                  
                  while (true)
                  {                          
@@ -75,7 +75,7 @@ public class Server extends Thread{
 	             			buffer.flip();
 	             				//New Input Message
 	             			if(buffer.hasRemaining()){
-	             				msg = (TranslationMessage)convertBufferToMessage(buffer);
+	             				msg = (TranslationRequestMessage)convertBufferToMessage(buffer);
 	             				_logger.debug("Received " + msg.getData1());
 	             				if(msg.getData1().equals("quit")){
 	             					_logger.debug("Now disconnecting the client");
@@ -85,11 +85,11 @@ public class Server extends Thread{
          				    int num = 1 + (int)(Math.random() * ((1 - 4) + 1));
          				    Thread.sleep(num*200);
          				    int result = LevenshteinDistance(msg.getData1(), msg.getData2());
-    			        	msg = new TranslationMessage("Levenshtein Distance between string : " + msg.getData1() + " and string "+ msg.getData2() + " is "+ result);
+         				   TranslationResponseMessage msg2 = new TranslationResponseMessage("Levenshtein Distance between string : " + msg.getData1() + " and string "+ msg.getData2() + " is "+ result, msg);
              				buffer.clear();
-             				buffer = ByteBuffer.wrap(Encoder.encode(msg));                           
+             				buffer = ByteBuffer.wrap(Encoder.encode(msg2));                           
     		        		client.send(buffer, destAddr);            		
-    		        		_logger.debug("Sending " + msg.getResponse());
+    		        		_logger.debug("Sending " + msg2.getResponse());
     		        		if(msg.getData1().equals("quit") || msg.getData2().equals("quit")){
                        			client.close();
                        			return;
@@ -124,15 +124,15 @@ public class Server extends Thread{
         }    
     }
 
-    private TranslationMessage convertBufferToMessage(ByteBuffer buffer) {
-    	TranslationMessage message = null;					
-		 byte[] bytes = new byte[buffer.remaining()];
-		 buffer.get(bytes);
-		 message = (TranslationMessage) Encoder.decode(bytes);
-		 buffer.clear();
-		 buffer = ByteBuffer.wrap(Encoder.encode(message));  		
-		 return message;
-	}	
+    private Message convertBufferToMessage(ByteBuffer buffer) {
+ 	   Message message = null;					
+ 		 byte[] bytes = new byte[buffer.remaining()];
+ 		 buffer.get(bytes);
+ 		 message = (Message) Encoder.decode(bytes);
+ 		 buffer.clear();
+ 		 buffer = ByteBuffer.wrap(Encoder.encode(message));  		
+ 		 return message;
+ 	}	
     
     int LevenshteinDistance(CharSequence str1, CharSequence str2)
 	  {

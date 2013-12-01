@@ -53,9 +53,9 @@ public class Client extends Thread
             				bufReader = new BufferedReader(new InputStreamReader(System.in));            				
             			    _data2 = bufReader.readLine();	
             			    
-            				TranslationMessage msg = null;
+            				TranslationRequestMessage msg = null;
             				if(_data1!= null && _data2 != null){
-	            				msg = new TranslationMessage(_data1, _data2);
+	            				msg = new TranslationRequestMessage(_data1, _data2);
 	            				buffer = ByteBuffer.wrap(Encoder.encode(msg));          
 	            	    		dc.send(buffer, srcAddr);
 	            	    		_logger.debug("Sending strings '" + msg.getData1()+ "' and '"+msg.getData2()+"'");     
@@ -69,9 +69,9 @@ public class Client extends Thread
              				readBuf.clear();
             				while(dc.read(readBuf)<=0);
 	            				readBuf.flip();
-	            				msg = (TranslationMessage)convertBufferToMessage(readBuf);
-	            				System.out.println("Received " + msg.getResponse());
-	            				_logger.debug("Received " + msg.getResponse());	             				
+	            				TranslationResponseMessage msg2 = (TranslationResponseMessage)convertBufferToMessage(readBuf);
+	            				System.out.println("Received " + msg2.getResponse());
+	            				_logger.debug("Received " + msg2.getResponse());	             				
             			}
             		 }catch(Exception e)
             		 {
@@ -115,7 +115,8 @@ public class Client extends Thread
       {
     	  e.printStackTrace();
     	  _logger.error(e);
-      }}
+      }
+      }
      
 
      public static void main(String args[])
@@ -124,15 +125,13 @@ public class Client extends Thread
      	_client.start();
      }
      
-     
-     private TranslationMessage convertBufferToMessage(ByteBuffer buffer) {
-    	 TranslationMessage message = null;					
+   private Message convertBufferToMessage(ByteBuffer buffer) {
+	   Message message = null;					
 		 byte[] bytes = new byte[buffer.remaining()];
 		 buffer.get(bytes);
-		 message = (TranslationMessage)Encoder.decode(bytes);
+		 message = (Message) Encoder.decode(bytes);
 		 buffer.clear();
 		 buffer = ByteBuffer.wrap(Encoder.encode(message));  		
 		 return message;
-	}	
-    
+	}    
 }
