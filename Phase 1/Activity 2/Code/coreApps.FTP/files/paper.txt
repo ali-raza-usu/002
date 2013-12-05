@@ -1,0 +1,77 @@
+WEAVING CROSSCUTTING CONCERNS INTO INTER-PROCESS COMMUNICATIONS (IPC) IN ASPECTJ
+ 
+Authors Name/s per 1st Affiliation (Author)
+line 1 (of Affiliation): dept. name of organization
+line 2: name of organization, acronyms acceptable
+line 3: City, Country
+line 4: e-mail: name@xyz.com
+Authors Name/s per 2nd Affiliation (Author)
+line 1 (of Affiliation): dept. name of organization
+line 2: name of organization, acronyms acceptable
+line 3: City, Country
+line 4: e-mail: name@xyz.com
+
+ 
+Abstract—This electronic document is a “live” template. The various components of your paper [title, text, heads, etc.] are already defined on the style sheet, as illustrated by the portions given in this document. DO NOT USE SPECIAL CHARACTERS, SYMBOLS, OR MATH IN YOUR TITLE OR ABSTRACT. (Abstract)
+Keywords-component; formatting; style; styling; insert (key words)
+INTRODUCTION
+Inter-process communications (IPC) are ubiquitous in today’s software systems, yet they are rarely treated as first-class programming concepts.  Instead, developers typically have to implement communication protocols indirectly using primitive operations, such as connect, send, receive, and close.  For many standard communication protocols, the sequencing and timing of these primitive operations can be relatively complex.  For example, consider a distributed system that uses the Passive File Transfer Protocol (Passive FTP) to move large data sets from a client to a server.  In this system, the server would enable communications by listening for connections requests on a published port, usually port 21.  A client would then initiate a conversion, i.e., an instance of the FTP protocol, by with connect request to the server on that port. The detailed sequences of actions are described in the Figure 1.  
+ 
+  
+Figure 1: PassiveFTP interaction Diagram
+ 
+Neither client’s nor the server’s side of the conversation is simple.  In fact, to preserve responsiveness to the multiple simultaneous clients and to end users, both the client and server usually execute parts of the conversation on different threads, making them even harder to flow during execution.  An FTP system could be further complicated by other communication-related requirements, such as:
+•	logging,
+•	detecting network or system failures,
+•	monitoring congestion and
+•	balancing load across redundant servers.
+From a communications perspective, these concerns (and many others not listed above) are what the Aspect-oriented Software Development (AOSD) paradigm refers to as crosscutting concerns, because they pertain to or cut through multiple parts of a core or base concept.  Directly implementing one or more these concerns in a typical FTP system can cause a scattering and tangling  of code (see Section 4.3 for more details).
+AOSD, which first started to appear in the literature in 1997 [23, 60], reduces scattering and tangling of code by encapsulating crosscutting concerns in first-class programming constructions, called aspects [36].  An aspect is an Abstract Data Type (ADT), just like classes in strongly typed, class-based object-oriented programming languages.  However, an aspect can also contain advice methods that encapsulate logic for addressing crosscutting concerns and pointcuts for describing where and when the advice needs to be executed.  A pointcut identifies a set of join points – temporal places in the execution of the system where and when weaving of advice takes place.  Each join point occurs at static places in the source code, called a shadow [36]
+AspectJ is programming language that extends to Java for aspects and, like many other aspect-oriented programming(AOP) languages and frameworks (AOF) [35-38], it allows programmers to weave advice for crosscutting concerns into join points that correspond to constructor calls/executions, methods calls/executions, class attribute references, and exceptions.  For a more detailed description of AspectJ, see [36].
+Since aspects are special ADT’s that encapsulate certain kinds of design concerns, it is possible for skilled software developers to create reusable object-oriented implementation that do basically the same thing.  The real difference between AOP and Object Orientation OO is that AOP offer a convenient mechanism for separating crosscutting concerns from core functionality and obliviousness [40].  Although poorly named, obliviousness is the idea that core functionality should not have to know about crosscutting concerns [29].  With obliviousness and aspects, the crosscutting concerns can be simply added to or removed from a system at build time with no changes to the source code.
+The problem is that AspectJ, like other AOP’s and OAF’s, does not support the weaving of advice into core high-level functional concepts, like IPC.  The proposed research hopes to extend AspectJ so developers can weave crosscutting concern into IPC in a modular and reusable way, while keeping the core functionality oblivious to those concerns.  
+This research will begin with a through literature review, much of which is already complete and summarized in Sections 2 and 7.   It will then pursue the innovation, refinement, and formalization of communication-related join points.  This will provide a foundation for developing an extension to AspectJ, called CommJ that allows application programmers to weave aspect behaviors for communication-related crosscutting concerns into such join points.  The proposed research will also demonstrate the feasibility and utility of CommJ and create a library of reusable communication aspects for common communication-related crosscutting concerns, and suite of non-trivial sample applications that use CommJ.  Finally, through experimentation, this research hopes to provide preliminary evidence that CommJ can improve software reuse and maintainability over existing object-oriented and aspect-oriented approaches, when a system involves or will eventually involve communication-related crosscutting concerns.
+In accomplishing these goals, the proposal research aims to yield the following specific contributions:
+•	A universe model for communications (UMC) that is rich enough to describe any type of IPC supported by the sockets or channels API in a standard JDK.
+•	An implementation of CommJ, including an implementation of UMC that provide the ability to weave advice into program execution before, after, or around complete conversions or individual communication operations.
+•	A reusable aspect library for common communication related crosscutting concern which verifies the correctness of UMC.
+•	A demonstration of the feasibility and utility of CommJ and the reusable aspect library through the implementation of application and communication aspects for those applications.
+•	An enhanced version of the Comparison Quality Metrics [59] to measure reusability and maintainability in aspect-oriented programs.
+•	A preliminary experiment to discover whether CommJ can help achieve improved reuse and maintainability when a system involved communication-related crosscutting concerns.
+BACKGROUND 
+In general a skilled programmer can do anything in an OO language that could be done in AOP language by making careful design decisions which lead to encapsulation of crosscutting concerns in well-modularized classes and then hooking the features of these classes into the base application.  Programmers can use a variety of techniques, such as delegates or callbacks, events, the application of a strategy, decorator or template method pattern[51] but they may had to struggle with issues such as code tangling and scattering, level of obliviousness and compromised flexibility. AOP provides a more elegant way of weaving new behaviors into existing code which are potentially less scattered, tangled, oblivious and decoupled from the base application. 
+In AOP, a programmer only needs a modular reasoning to discover the code and structure of the scattered and tangled snippets, where in OO formalisms; he needs global reasoning [49]. Additionally, few times separating out tangling from functionality causes problems when we want to extend the tangled class functionality. One such well-known abnormality is termed as inheritance anomaly [17], where certain kinds of tangling leave no choice for code refactoring in OO world. Hence, the attraction of AOP is not that a developer can do more, but that a developer can do same things better, i.e., better modularizations with less scattering, less tangling.
+Aspect-oriented Programming Languages, Toolkits, and Framework
+There are some techniques which exist at same time or before aspect-orientation to assist in programming modularization such as monads [42], subject-oriented programming [18, 19], reflection [43, 45], mixins [33], and composition filters [43]. However AOP model seems to be the most influential modular programming paradigm. We can also think of different types of AOP frameworks such as AspectJ [36], AspectWorkz [35], Spring AOP [38] and JBoss AOP [37]. Though they are semantically similar in terms of their invocation, initialization, access and exception handling routines but their behaviors are far different in contexts of syntactical differences (program or annotation like declaration style), binding approach (parametric or reflective access to executing objects), expressiveness (verbosity or compactness), advise weaving-approaches (compile time, load time or run time), static or dynamic analysis, and their overall acceptance and inclination in academia and industry. So far AspectJ (now powered by IBM) is considered the de facto standard and the most widely used AOP framework for modeling crosscutting concerns due to its Java-like structure, powerful expressiveness, and debugging abilities, even though it has a little overhead in terms of memory usage and time. In this proposal, we would limit our scope to AspectJ for defining the communication related crosscutting concerns.
+Communications
+Different communication abstractions such as channels or sockets can be defined either via connection-oriented or connection-less communication styles. A process or thread in communication and distributed systems can act both as an initiator or a listener and in a different perspective as a sender or receiver respectively. Some essential communication concepts in perspective of our work are described below: 
+•	Listener: It accepts the incoming connections and establishes a communication (by creating a new session).
+•	Initiator: It requests the listener to establish a session over a communication channel.
+•	Sender: It is a process (the part of either a listener or an initiator) which can send a data over the network, to a receiver or to multiple receivers.
+•	Receiver: It is a process (the part of either a listener or an initiator) which can receive data over the network, sent by a sender or from multiple senders.
+•	Message: It is a piece of data sent from a sender to one or more receivers.
+•	Conversation: It is an exchange of messages following a protocol.  In a conversation on a single process (or thread), a sender and a receiver can exchange different messages. 
+•	Protocol: It is a set of rules followed by the sender and receiver. Usually a conversation follows a protocol. 
+•	Channel: It can be defined in the abstractions of connection-oriented or connection-less communication. Implementation details can vary with respect to these abstractions; but more or less, we can implement the same application using any communication abstractions. However one abstraction can provide more flexibility over another in handling a particular situation.
+•	Session: It gets established between an initiator and a listener after a request to initiate it from the initiator side and a successful acceptance from the listener side.
+Below are the various types of well-known communication heterogeneities, commonly found in IPC.
+•	Synchronous vs. Asynchronous Communications: Blocking (sockets) and non-blocking communication (channels) APIs in JDK are examples of synchronous and asynchronous communications respectively.
+•	Unidirectional vs. Bi-directional Communications: Acknowledgment is not required in unidirectional communications but it is required in bi-directional communications.
+•	Connection-oriented vs. Connection-less Communications: User Datagram Protocol (UDP) and Transport Control Protocol (TCP) are examples of connection-oriented and connection-less communications respectively.
+•	Local vs. Global Communications: Unicast is an example of local communications where as a broadcast is an example of global communication.
+•	Structured vs. Unstructured Communications: Structured style forces objects to send messages to a predefined set of object, however in unstructured communication, an object can exchange messages with any other object.
+•	Static vs. Dynamic Communications: In static-communication, processes identification does not change, in other case, the identification may change at run-time.
+•	Symmetric vs. Asymmetric: In symmetric communications, the unit or size of message remains fixed but in asymmetric it can vary.
+Crosscutting concerns in Communication
+IPC usually happen in the form of send and receive events, with data sharing either through message-passing or shared memory based schemes. By limiting our discussions to message-passing communication scheme, we believe that AspectJ has a good potential to model communication related crosscutting concerns in the abstractions of connection(connect, accept, listen, close) and communications(send and receive) events respectively. Despite AspectJ’s rich set of pointcut designators, there is still a weakness to designate few interesting pointcuts for communication and connection related abstractions, which we can’t easily define by available designators.  Abstractions such as message send and received in communications, accept, listen and close in connections, occur frequently in communication and disturbed systems.  If AspectJ can allow programmers to define crosscutting concerns in the constructs of IPC, then they can code more reusable and maintainable crosscutting concerns for communications, such as: 
+•	Measuring turn-around performance for request-reply conversations, multi-step conversations and total connection time
+•	Measuring system throughput
+•	Handling version control among communication protocols
+•	Simulating one or more processes in a distributed system to test a specific component
+•	Detecting lost, corrupt or out-of-order messages and controlling quality of service (QoS)
+•	Implementing reliable communication
+•	Network monitoring
+•	Tracking consistent and secure multi-step conversations or handling authentication permissions in banking domain
+Hence, we developed an extension to AspectJ framework, called CommJ, which allows developers to define pointcuts in the natural language of IPC. 
+ 
+COMMJ ARCHITECTURE
