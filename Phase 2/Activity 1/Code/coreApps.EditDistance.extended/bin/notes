@@ -1,6 +1,0 @@
-1- Changed the protocol message structure
-2- Changed the communication scheme from TCP to UDP
-3- Translator is handling two Clients simultaneously
-
-1- Client and Server is communicating via sockets
-   

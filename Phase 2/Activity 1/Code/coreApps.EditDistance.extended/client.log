@@ -1,7 +1,0 @@
-20:35:46,898 DEBUG Client.java: 40 - Channel connected!
-20:35:50,433 DEBUG Client.java: 61 - Sending strings 'bneaonb' and 'nb'aeoinb'
-20:35:50,789 DEBUG Client.java: 74 - Received Levenshtein Distance between string : bneaonb and string nb'aeoinb is 5
-20:36:01,642 DEBUG Client.java: 61 - Sending strings 'bawobowreBI' and '	bnsbea'
-20:36:01,892 DEBUG Client.java: 74 - Received Levenshtein Distance between string : bawobowreBI and string 	bnsbea is 9
-20:36:12,166 DEBUG Client.java: 61 - Sending strings 'gba'eofb' and 'b;sdbe'
-20:36:12,186 DEBUG Client.java: 74 - Received Levenshtein Distance between string : gba'eofb and string b;sdbe is 7
